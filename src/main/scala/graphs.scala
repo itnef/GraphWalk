@@ -19,6 +19,7 @@ class GraphImpl extends MuDiGraph {
   def getOutgoing(n: Int): HashSet[Int] = {
     return this.adjMap.getOrElse(n, new HashSet());
   }
+  // Correct as long as there are not empty hashsets in the map.
   def getNumNodes:Int = {
     return adjMap.size
   }

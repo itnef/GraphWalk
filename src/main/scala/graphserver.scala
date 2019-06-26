@@ -11,7 +11,6 @@ import com.graxp._
 import scala.io.Source
 
 // export JAVA_OPTS="-Xmx16g -Xms1024m"
-// sbt run
 
 object graphServer {
 
@@ -25,6 +24,7 @@ object graphServer {
 
   println("Server is ready")
 
+  // Load sample file, hardcoded
   val it = FileUtils.lineIterator(new File("out.wikipedia_link_de"), "UTF-8");
   var G : MuDiGraph = new GraphImpl();
 
@@ -46,6 +46,20 @@ object graphServer {
             toInt(args) match {
               case Some(n) =>
                 sender ! "'(" ++ G.getOutgoing(n).mkString(" ") ++ ")"
+              case _ => {
+                println("received unparseable response")
+                sender ! "'error"
+              }
+            }
+          }
+          case pattern("num-nodes", args) => {
+            toInt(args) match {
+              case Some(n) =>
+                sender ! G.getNumNodes()
+              case _ => {
+                println("received unparseable response")
+                sender ! "'error"
+              }
             }
           }
         }

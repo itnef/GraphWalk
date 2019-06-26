@@ -37,14 +37,20 @@ class LocalActor extends Actor {
       println("Start")
       remote ! "(edges-from %d)".format(currentNode)
     case msg: String =>
-      println(s"LocalActor received message: '$msg'")
       ExprParser.parseAll(ExprParser.expr, msg) match {
         case ExprParser.Success(list, _) => {
           println(list)
-          val idx = scala.util.Random.nextInt(list.size)
-          val next = list(idx)
-          println(s"Choosing node $next")
-          remote ! "(edges-from %d)".format(next)
+          if (list.size > 0) {
+            val idx = scala.util.Random.nextInt(list.size)
+            val next = list(idx)
+            println(s"Choosing node $next")
+            remote ! "(edges-from %d)".format(next)
+          } else {
+            println("No outgoing edges, quitting")
+          }
+        }
+        case _ => {
+          println(s"LocalActor received unparseable message: '$msg'")
         }
       }
       // should be "new OutEdgesQuery(0)" perhaps but this would require serialization code
